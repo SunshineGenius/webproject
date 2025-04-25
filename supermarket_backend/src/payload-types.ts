@@ -174,6 +174,7 @@ export interface Media {
 export interface Product {
   id: string;
   name: string;
+  slug: string;
   price: number;
   currency: 'HUF' | 'EUR' | 'CNY' | 'USD';
   weightOrVolume?: string | null;
@@ -403,6 +404,7 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface ProductsSelect<T extends boolean = true> {
   name?: T;
+  slug?: T;
   price?: T;
   currency?: T;
   weightOrVolume?: T;

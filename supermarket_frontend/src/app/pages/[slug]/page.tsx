@@ -1,21 +1,28 @@
+// src/app/pages/[slug]/page.tsx
+
 import { notFound } from 'next/navigation'
 import { convertLexicalToHTML } from '@payloadcms/richtext-lexical'
 
 interface PageProps {
-  params: {
-    slug: string
-  }
+  params: { slug: string }
+}
+
+export async function generateStaticParams() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/pages`)
+  const data = await res.json()
+  return data.docs.map((page: any) => ({ slug: page.slug }))
 }
 
 export default async function Page({ params }: PageProps) {
-  // 向后端 payload 发送请求，查询 slug 对应页面
+  const slug = params.slug
+
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/pages?where[slug][equals]=${params.slug}`,
-    { next: { revalidate: 60 } }
+    `${process.env.NEXT_PUBLIC_API_URL}/api/pages?where[slug][equals]=${slug}&depth=1`,
+    { cache: 'no-store' }
   )
 
   if (!res.ok) {
-    console.error('接口返回错误：', res.status)
+    console.error('页面加载失败:', res.status)
     return notFound()
   }
 

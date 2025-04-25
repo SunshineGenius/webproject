@@ -5,6 +5,9 @@ const Products: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
   },
+  access: {
+    read: () => true, // 允许匿名读取
+  },
   fields: [
     { name: 'name', type: 'text', required: true },
     { name: 'price', type: 'number', required: true },

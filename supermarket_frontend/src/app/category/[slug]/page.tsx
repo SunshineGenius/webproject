@@ -17,6 +17,9 @@ export default function CategoryPage() {
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
+    console.log('API地址:', process.env.NEXT_PUBLIC_API_URL);
+    console.log('slug:', slug);
+    
     if (!slug) return;
 
     async function fetchProducts() {
@@ -43,7 +46,7 @@ export default function CategoryPage() {
         );
         const productData = await productRes.json();
     
-        // ✅ 打印产品数据调试
+        // 打印产品数据调试
         console.log('产品数据:', productData);
     
         setProducts(productData.docs || []);

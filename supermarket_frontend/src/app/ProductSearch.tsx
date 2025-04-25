@@ -8,7 +8,7 @@ export default function ProductSearch() {
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     alert(`搜索关键词：${query}`)
-    // ✅ 实际使用时在这里调用 API，比如 fetch(`/api/products?search=${query}`)
+    // 实际使用时在这里调用 API，比如 fetch(`/api/products?search=${query}`)
   }
 
   return (

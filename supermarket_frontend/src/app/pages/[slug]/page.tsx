@@ -1,10 +1,24 @@
 // src/app/pages/[slug]/page.tsx
 
 import { notFound } from 'next/navigation'
-import { convertLexicalToHTML } from '@payloadcms/richtext-lexical'
 
 interface PageProps {
   params: { slug: string }
+}
+
+// 手动渲染 Lexical 富文本 JSON 为 HTML 字符串
+function renderLexicalContent(lexical: any): string {
+  if (!lexical?.root?.children) return ''
+
+  return lexical.root.children
+    .map((paragraph: any) => {
+      if (!paragraph?.children) return ''
+      const text = paragraph.children
+        .map((node: any) => node.text || '')
+        .join('')
+      return `<p>${text}</p>`
+    })
+    .join('')
 }
 
 export async function generateStaticParams() {
@@ -31,7 +45,8 @@ export default async function Page({ params }: PageProps) {
 
   if (!page) return notFound()
 
-  const html = await convertLexicalToHTML(page.content)
+  //使用手动函数生成 HTML
+  const html = renderLexicalContent(page.content)
 
   return (
     <main className="max-w-3xl mx-auto py-12 px-4 prose">

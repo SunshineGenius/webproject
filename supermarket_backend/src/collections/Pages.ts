@@ -1,4 +1,5 @@
 import { CollectionConfig } from 'payload/types'
+import { lexicalEditor } from '@payloadcms/richtext-lexical' // 关键导入
 
 const Pages: CollectionConfig = {
   slug: 'pages',
@@ -6,7 +7,7 @@ const Pages: CollectionConfig = {
     useAsTitle: 'title',
   },
   access: {
-    read: () => true, // 允许所有人读取
+    read: () => true,
   },
   fields: [
     {
@@ -22,6 +23,7 @@ const Pages: CollectionConfig = {
     {
       name: 'content',
       type: 'richText',
+      editor: lexicalEditor(), // 关键设置
     },
   ],
 }

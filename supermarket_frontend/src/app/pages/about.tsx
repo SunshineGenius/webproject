@@ -27,7 +27,7 @@ export default function AboutPage() {
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold text-green-700 mb-6">关于我们</h1>
+      <h1 className="text-2xl font-bold text-green-700 mb-6">About us</h1>
       <div
         className="content"
         dangerouslySetInnerHTML={{ __html: content }}  // 渲染富文本内容

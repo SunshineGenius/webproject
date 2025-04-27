@@ -1,6 +1,7 @@
-// app/product/[slug]/page.tsx
+// src/app/product/[slug]/page.tsx
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { AddToCartButton } from '@/components/AddToCartButton'
 
 interface Product {
   id: string
@@ -23,16 +24,16 @@ interface ProductPageProps {
   params: { slug: string }
 }
 
-// 预生成静态路径
+//  静态路径预生成
 export async function generateStaticParams() {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/products?limit=1000`,
-      { next: { revalidate: 60 } } // 每60秒重新验证静态路径
+      { next: { revalidate: 60 } }
     )
     const data = await res.json()
     return data.docs.map((product: Product) => ({
-      slug: product.slug
+      slug: product.slug,
     }))
   } catch (error) {
     console.error('生成静态路径失败:', error)
@@ -40,14 +41,15 @@ export async function generateStaticParams() {
   }
 }
 
+// 主页面组件：注意加了 async
 export default async function ProductPage({ params }: ProductPageProps) {
-  // 参数校验
-  if (!params?.slug) return notFound()
+  const { slug } = params  //  解构 slug，规范用法
+
+  if (!slug) return notFound()
 
   try {
-    // 获取商品数据
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/products?where[slug][equals]=${params.slug}&depth=2`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/products?where[slug][equals]=${encodeURIComponent(slug)}&depth=2`,
       { cache: 'no-store' }
     )
 
@@ -55,28 +57,26 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
     const data = await res.json()
     const product: Product = data.docs?.[0]
+
     if (!product) return notFound()
 
-    // 安全处理分类slug
-    const categorySlug = product.category?.slug 
-      || product.category?.name?.toLowerCase()?.replace(/\s+/g, '-') 
+    const categorySlug = product.category?.slug
+      || product.category?.name?.toLowerCase()?.replace(/\s+/g, '-')
       || ''
 
     return (
       <div className="max-w-5xl mx-auto px-6 py-10 relative">
-        {/* 返回按钮 */}
+        {/* 返回分类页 */}
         {categorySlug && (
           <Link
             href={`/category/${categorySlug}`}
             className="absolute top-6 left-6 text-green-700 hover:underline"
-            aria-label="返回分类页面"
           >
-            ← 返回上一页
+            ← Return to previous page
           </Link>
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-          {/* 商品图片 */}
           {product.image?.url && (
             <img
               src={`${process.env.NEXT_PUBLIC_API_URL}${product.image.url}`}
@@ -88,7 +88,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
             />
           )}
 
-          {/* 商品信息 */}
           <div className="flex flex-col justify-between space-y-6">
             <div>
               <h1 className="text-3xl font-bold text-green-700">{product.name}</h1>
@@ -99,12 +98,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
               {product.weightOrVolume && (
                 <p className="text-md text-gray-600 mt-1">
-                  规格：{product.weightOrVolume}
+                  Capacity/Weight：{product.weightOrVolume}
                 </p>
               )}
 
               {product.description && (
-                <div 
+                <div
                   className="mt-6 text-gray-700 leading-relaxed prose"
                   dangerouslySetInnerHTML={{ __html: product.description }}
                 />
@@ -112,12 +111,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </div>
 
             {/* 加入购物车按钮 */}
-            <button 
-              className="mt-8 w-full bg-green-600 text-white py-3 rounded text-lg font-bold hover:bg-green-700 transition"
-              aria-label="加入购物车"
-            >
-              加入购物车
-            </button>
+            <AddToCartButton
+              product={{
+                id: product.id,
+                slug: product.slug,
+                name: product.name,
+                price: product.price,
+                currency: product.currency,
+                imageUrl: product.image?.url
+                  ? `${process.env.NEXT_PUBLIC_API_URL}${product.image.url}`
+                  : undefined,
+              }}
+            />
           </div>
         </div>
       </div>

@@ -1,14 +1,17 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function ProductSearch() {
   const [query, setQuery] = useState("")
+  const router = useRouter()
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    alert(`搜索关键词：${query}`)
-    // 实际使用时在这里调用 API，比如 fetch(`/api/products?search=${query}`)
+
+    // 不管是否为空，都跳转
+    router.push(`/search/${encodeURIComponent(query.trim())}`)
   }
 
   return (

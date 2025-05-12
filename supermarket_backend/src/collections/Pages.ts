@@ -1,4 +1,4 @@
-import { CollectionConfig } from 'payload/types'
+import { CollectionConfig } from 'payload'
 import { lexicalEditor } from '@payloadcms/richtext-lexical' // 关键导入
 
 const Pages: CollectionConfig = {
